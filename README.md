@@ -1,57 +1,52 @@
-CCM
-============
+# CCM
 
-# Description
-There is a C program `ccm` which can be used for
-encryption according to [RFC 3610](http://tools.ietf.org/html/rfc3610) and performs a cryptographic integrity check during decryption.
+**CCM** is an algorithm that extends the block cipher AES with **authentication**, so that it ensures both confidentiality and integrity.
 
-Counter with CBC-MAC (CCM) is a generic authenticated encryption block cipher mode.  CCM is only defined for use with 128-bit block ciphers, such as AES [AES].  The CCM design principles can easily be applied to other block sizes, but these modes will require their own specifications. For the generic CCM mode there are two parameter choices. 
+## :dart: Features
 
-The first choice is *M*, the size of the authentication field. The choice of the value for *M* involves a trade-off between message expansion and the probability that an attacker can undetectably modify a message. Valid values are 4, 6, 8, 10, 12, 14, and 16 octets.  The second choice is *L*, the size of the length field.  This value requires a trade-off between the maximum message size and the size of the Nonce. Different applications require different trade-offs, so *L* is a parameter. Valid values of *L* range between 2 octets and 8 octets (the value *L=1* is reserved).
+* Authenticated AES encryption
+* Decryption using 128-bit block ciphers
 
-## Prerequisites
-+ C99
-+ Doxygen for reading the documentation
-+ OpenSSL for encryption and decryption features
+## :rocket: Getting Started
 
-## Installation
-At first, clone or download this project. Afterwards, go to the terminal and type `make` to compile and link this application.
+### :wrench: Installation
 
-Furthermore, it is possible to use the debug mode using `make debug` (for additional output such as the S-blocks) or to delete the object files and so on using `make clean`.
+As a prerequisite, the library [OpenSSL](https://github.com/openssl/openssl) must be installed, since this algorithm accesses functions of this toolkit.
 
-## Usage
-The CLI is compatible with the following format:
+To compile and link CCM just type `make` or `make debug` for debugging purposes.
 
+**Note**: Object files and other intermediate files can be removed using the command `make clean`.
+
+### :computer: Usage
+
+The CLI can be used according to the following scheme:
+
+```console
+$ ./ccm -d|-e [-h] <key> <nonce> <file>
 ```
-$ ./ccm -d|-e [-h] <key> <nonce> <plaintext> secret text
-```
 
-This is explained below:
+* `-d`: decryption
+* `-e`: encryption
+* `-h`: hexadecimal format
+* `<key>`: cipher key
+* `<nonce>`: random number
+* `<file>`: ciphertext or plaintext
 
-* `-d` for encryption
-* `-e` for decryption
-* `-h` (optional) for entering hexadecimal numbers
-* `<key>` for the used key
-* `nonce` for the random number
-* `secret text` for the ciphertext as file
+The file is read in as an input stream and either encrypted or decrypted depending on the parameters.
 
-The respective file is read in as input stream (stdin) and the parameters are parsed via `getopt`. For example, either encryption or decryption is allowed, but not both at the same time.
+## :white_check_mark: Tests
 
-The test vector *testdata.txt* is used as an example. The settings regarding the password are:
+In the following, the test vector [testdata.txt](testdata.txt) is to be encrypted. The password settings according to [RFC 3610](http://tools.ietf.org/html/rfc3610) are as follows:
 
 ```
 Cipher: AES-128 M=8 L=5 K_LEN=16 N_LEN=10 K=0x001234567890abcdefdcaffeed3921ee N=0x00112233445566778899
 ```
 
-These are now applied as follows:
+Now the file will be encrypted applying the aforementioned settings:
 
-```
+```console
 $ ./ccm -e -h 001234567890abcdefdcaffeed3921ee 00112233445566778899 < testdata.txt > encrypted
-``` 
 
-Afterwards, the following output is available:
-
-```
 key:00:12:34:56:78:90:ab:cd:ef:dc:af:fe:ed:39:21:ee
 nonce:00:11:22:33:44:55:66:77:88:99
 length:38
@@ -79,14 +74,17 @@ dc:8d:0d:f2:fa:0d:95:7e:70:84:1f:41:71:c5:a7:50:
 DzÇp–5{h˜5MøŸóA=â¡%Á÷ßﬁêÒiiüŒ@‹—tS,£∞œπ
 ```
 
-The respective block types, keys and random number are displayed. Also the length, which is *38* (increased by 1 due to zero byte), is displayed. The ciphertext is at the bottom.
+The respective block types, keys, and random number are displayed. The ciphertext is at the bottom. The decryption works analogously.
 
-## More information
-Generate the documentation regarding the special comments with a command in your terminal, for example:
+## :book: Documentation
 
-```
+The CCM documentation becomes available by typing the following commands in the terminal:
+
+```console
 $ cd ccm
 $ doxygen doxygen.config
 ```
 
-Afterwards, you will get a website with helpful information about the code.
+## :warning: License
+
+CCM is licensed under the terms of the [MIT license](LICENSE.txt).
